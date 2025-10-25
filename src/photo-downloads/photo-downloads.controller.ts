@@ -1,5 +1,11 @@
 import { Controller, Post, Delete, Get, Param } from '@nestjs/common';
 import { PhotoDownloadsService } from './photo-downloads.service';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+
+
+@UseGuards(AuthGuard('jwt'))
 
 @Controller('photo-downloads')
 export class PhotoDownloadsController {

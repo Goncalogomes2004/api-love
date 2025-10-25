@@ -1,10 +1,24 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from 'src/entities/users.entity';
-
+import { AuthGuard } from '@nestjs/passport';
+class UpdatePasswordDto {
+    currentPassword: string;
+    newPassword: string;
+}
+@UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
+    @Patch(':id/password')
+    async updatePassword(
+        @Param('id') id: string,
+        @Body() dto: UpdatePasswordDto,
+    ) {
+        const { currentPassword, newPassword } = dto;
+        return this.usersService.updatePassword(Number(id), currentPassword, newPassword);
+    }
+
 
     @Post()
     create(@Body() user: Partial<User>) {

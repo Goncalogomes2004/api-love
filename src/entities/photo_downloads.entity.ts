@@ -1,10 +1,10 @@
-// photo_downloads.entity.ts
 import {
     Entity,
     ManyToOne,
     JoinColumn,
-    PrimaryColumn,
+    PrimaryGeneratedColumn,
     CreateDateColumn,
+    Column,
     Index,
 } from 'typeorm';
 import { Photo } from './photo.entity';
@@ -12,11 +12,14 @@ import { User } from './users.entity';
 
 @Entity('photo_downloads')
 export class PhotoDownload {
-    @PrimaryColumn({ type: 'int' })
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({ type: 'int' })
     @Index()
     photo_id: number;
 
-    @PrimaryColumn({ type: 'int' })
+    @Column({ type: 'int' })
     @Index()
     user_id: number;
 
@@ -30,4 +33,7 @@ export class PhotoDownload {
 
     @CreateDateColumn({ type: 'timestamp', name: 'downloaded_at' })
     downloaded_at: Date;
+
+    @Column({ type: 'int', default: 1 })
+    numberOfTimes: number;
 }

@@ -1,29 +1,47 @@
+// src/folder_photos/folder_photos.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Folder } from 'src/entities/folder.entity';
+import { Repository } from 'typeorm';
 import { FolderPhoto } from 'src/entities/folder_photos.entity';
 import { Photo } from 'src/entities/photo.entity';
-import { Repository } from 'typeorm';
-
+import { Folder } from 'src/entities/folder.entity';
 
 @Injectable()
 export class FolderPhotosService {
     constructor(
-        @InjectRepository(FolderPhoto) private folderPhotosRepo: Repository<FolderPhoto>,
-        @InjectRepository(Folder) private foldersRepo: Repository<Folder>,
-        @InjectRepository(Photo) private photosRepo: Repository<Photo>,
+        @InjectRepository(FolderPhoto)
+        private folderPhotosRepo: Repository<FolderPhoto>,
+        @InjectRepository(Photo)
+        private photosRepo: Repository<Photo>,
+        @InjectRepository(Folder)
+        private foldersRepo: Repository<Folder>,
     ) { }
 
-    addPhotoToFolder(folderId: number, photoId: number) {
-        const fp = this.folderPhotosRepo.create({ folder_id: folderId, photo_id: photoId });
-        return this.folderPhotosRepo.save(fp);
+    async addPhotoToFolder(folderId: number, photoData: Partial<Photo>) {
+        // 1. Criar a foto
+
+
+        // 2. Criar relação folder-photo
+        const relation = this.folderPhotosRepo.create({
+            folder_id: folderId,
+            photo_id: photoData.id,
+        });
+
+        await this.folderPhotosRepo.save(relation);
+        return photoData;
     }
 
-    removePhotoFromFolder(folderId: number, photoId: number) {
-        return this.folderPhotosRepo.delete({ folder_id: folderId, photo_id: photoId });
+    async findPhotosByFolder(folderId: number) {
+        const relations = await this.folderPhotosRepo.find({
+            where: { folder_id: folderId },
+            relations: ['photo', 'photo.uploaded_by'],
+        });
+
+        return relations.map((r) => r.photo);
     }
 
-    findPhotosInFolder(folderId: number) {
-        return this.folderPhotosRepo.find({ where: { folder_id: folderId }, relations: ['photo'] });
+    async removePhotoFromFolder(folderId: number, photoId: number) {
+        await this.folderPhotosRepo.delete({ folder_id: folderId, photo_id: photoId });
+        // opcional: deletar a photo em si, se não estiver em outras pastas
     }
 }

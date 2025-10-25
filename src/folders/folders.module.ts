@@ -5,10 +5,11 @@ import { Photo } from 'src/entities/photo.entity';
 import { User } from 'src/entities/users.entity';
 import { FoldersService } from './folders.service';
 import { FoldersController } from './folders.controller';
+import { ChangesGateway } from 'src/gateWay/changes.gateway';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Folder, User, Photo])],
-    providers: [FoldersService],
+    providers: [FoldersService, ChangesGateway],
     controllers: [FoldersController],
     exports: [FoldersService],
 })

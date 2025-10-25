@@ -1,22 +1,44 @@
-import { Controller, Post, Delete, Get, Param } from '@nestjs/common';
+// src/folder_photos/folder_photos.controller.ts
+import { Controller, Get, Post, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { FolderPhotosService } from './folder-photos.service';
+import { ChangesGateway } from 'src/gateWay/changes.gateway';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('folder-photos')
 export class FolderPhotosController {
-    constructor(private readonly folderPhotosService: FolderPhotosService) { }
+    constructor(private readonly folderPhotosService: FolderPhotosService,
+        private changesGateway: ChangesGateway,
 
-    @Post(':folderId/:photoId')
-    addPhoto(@Param('folderId') folderId: number, @Param('photoId') photoId: number) {
-        return this.folderPhotosService.addPhotoToFolder(folderId, photoId);
-    }
+    ) { }
 
-    @Delete(':folderId/:photoId')
-    removePhoto(@Param('folderId') folderId: number, @Param('photoId') photoId: number) {
-        return this.folderPhotosService.removePhotoFromFolder(folderId, photoId);
+    @Post(':folderId')
+    async addPhotoToFolder(
+        @Param('folderId') folderId: number,
+        @Body() photoData: any,
+    ) {
+
+        const resp = await this.folderPhotosService.addPhotoToFolder(folderId, photoData);
+        this.changesGateway.sendImageEdited(folderId)
+        this.changesGateway.sendNoFolderUpdate();
+        return resp
+
+
     }
 
     @Get(':folderId')
-    getPhotos(@Param('folderId') folderId: number) {
-        return this.folderPhotosService.findPhotosInFolder(folderId);
+    findPhotosByFolder(@Param('folderId') folderId: number) {
+        return this.folderPhotosService.findPhotosByFolder(folderId);
+    }
+
+    @Delete(':folderId/:photoId')
+    async removePhotoFromFolder(
+        @Param('folderId') folderId: number,
+        @Param('photoId') photoId: number,
+    ) {
+        const resp = await this.folderPhotosService.removePhotoFromFolder(folderId, photoId);
+        this.changesGateway.sendImageEdited(folderId)
+        this.changesGateway.sendNoFolderUpdate();
+        return resp
     }
 }

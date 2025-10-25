@@ -1,6 +1,39 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/users/{id}/password": {
+      "patch": {
+        "operationId": "UsersController_updatePassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/users": {
       "post": {
         "operationId": "UsersController_create",
@@ -118,6 +151,52 @@
         ]
       }
     },
+    "/folders/{id}/upload-cover": {
+      "post": {
+        "operationId": "FoldersController_uploadCover",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      }
+    },
+    "/folders/cover/{code}": {
+      "get": {
+        "operationId": "FoldersController_getCoverPhoto",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Folders"
+        ]
+      }
+    },
     "/folders/{id}": {
       "get": {
         "operationId": "FoldersController_findOne",
@@ -209,6 +288,43 @@
         ]
       }
     },
+    "/photos/noFolder": {
+      "get": {
+        "operationId": "PhotosController_findWithNoFolder",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/photos/details/{id}": {
+      "get": {
+        "operationId": "PhotosController_getPhotoDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
     "/photos/{id}": {
       "get": {
         "operationId": "PhotosController_findOne",
@@ -274,20 +390,49 @@
         ]
       }
     },
-    "/folder-photos/{folderId}/{photoId}": {
-      "post": {
-        "operationId": "FolderPhotosController_addPhoto",
+    "/photos/image/{photoCode}": {
+      "get": {
+        "operationId": "PhotosController_getImage",
         "parameters": [
           {
-            "name": "folderId",
+            "name": "photoCode",
             "required": true,
             "in": "path",
             "schema": {
-              "type": "number"
+              "type": "string"
             }
-          },
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/photos/upload": {
+      "post": {
+        "operationId": "PhotosController_uploadPhoto",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Photos"
+        ]
+      }
+    },
+    "/folder-photos/{folderId}": {
+      "post": {
+        "operationId": "FolderPhotosController_addPhotoToFolder",
+        "parameters": [
           {
-            "name": "photoId",
+            "name": "folderId",
             "required": true,
             "in": "path",
             "schema": {
@@ -304,19 +449,11 @@
           "FolderPhotos"
         ]
       },
-      "delete": {
-        "operationId": "FolderPhotosController_removePhoto",
+      "get": {
+        "operationId": "FolderPhotosController_findPhotosByFolder",
         "parameters": [
           {
             "name": "folderId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "photoId",
             "required": true,
             "in": "path",
             "schema": {
@@ -334,12 +471,20 @@
         ]
       }
     },
-    "/folder-photos/{folderId}": {
-      "get": {
-        "operationId": "FolderPhotosController_getPhotos",
+    "/folder-photos/{folderId}/{photoId}": {
+      "delete": {
+        "operationId": "FolderPhotosController_removePhotoFromFolder",
         "parameters": [
           {
             "name": "folderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "photoId",
             "required": true,
             "in": "path",
             "schema": {
@@ -462,6 +607,20 @@
           "PhotoDownloads"
         ]
       }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
     }
   },
   "info": {
@@ -473,6 +632,11 @@
   "tags": [],
   "servers": [],
   "components": {
-    "schemas": {}
+    "schemas": {
+      "UpdatePasswordDto": {
+        "type": "object",
+        "properties": {}
+      }
+    }
   }
 }

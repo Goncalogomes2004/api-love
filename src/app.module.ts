@@ -13,6 +13,7 @@ import { Folder } from './entities/folder.entity';
 import { Photo } from './entities/photo.entity';
 import { FolderPhoto } from './entities/folder_photos.entity';
 import { PhotoDownload } from './entities/photo_downloads.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PhotoDownload } from './entities/photo_downloads.entity';
     PhotosModule,
     FolderPhotosModule,
     PhotoDownloadsModule,
+    AuthModule
   ],
   controllers: [],
   providers: [],
