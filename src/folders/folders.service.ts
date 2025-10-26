@@ -7,6 +7,7 @@ import { Photo } from 'src/entities/photo.entity';
 import { User } from 'src/entities/users.entity';
 import { ChangesGateway } from 'src/gateWay/changes.gateway';
 import { Repository } from 'typeorm';
+import { promises as fs } from "fs";
 
 
 @Injectable()
@@ -26,14 +27,34 @@ export class FoldersService {
         this.changesGateway.sendFolderEdited()
         return this.foldersRepository.save(newFolder);
     }
+
     async setCoverPhotoCode(id: number, code: string) {
         const folder = await this.foldersRepository.findOne({ where: { id } });
         if (!folder) throw new Error('Folder not found');
-        folder.cover_photo_code = code;
 
+        const uploadsPath = join(__dirname, '../../uploads/folders');
+
+        // Remove a imagem antiga, se existir
+        if (folder.cover_photo_code) {
+            const oldFilePath = join(uploadsPath, folder.cover_photo_code);
+            try {
+                await fs.unlink(oldFilePath);
+            } catch (err) {
+                // se o ficheiro não existir, ignora
+                if (err.code !== 'ENOENT') {
+                    console.error('Erro ao remover capa antiga:', err);
+                }
+            }
+        }
+
+        // Atualiza para a nova capa
+        folder.cover_photo_code = code;
         const res = await this.foldersRepository.save(folder);
-        this.changesGateway.sendFolderImageEdited()
-        return res
+
+        // Notifica via WebSocket
+        this.changesGateway.sendFolderImageEdited();
+
+        return res;
     }
     getCoverPhotoPath(code: string): string {
         const filePath = join(process.cwd(), 'uploads/folders', code);
