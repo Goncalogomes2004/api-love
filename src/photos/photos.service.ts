@@ -28,9 +28,9 @@ export class PhotosService {
 
     create(photo: Partial<Photo>) {
         const newPhoto = this.photosRepository.create(photo);
+        this.changesGateway.sendImageAdded()
         return this.photosRepository.save(newPhoto);
     }
-
 
 
 
@@ -42,8 +42,8 @@ export class PhotosService {
         });
         if (!photo) return null;
 
-        // 2️⃣ Buscar pasta(s) da foto
-        const folderPhoto = await this.folderPhotoRepository.findOne({
+        // 2️⃣ Buscar todas as pastas associadas à foto
+        const folderPhotos = await this.folderPhotoRepository.find({
             where: { photo_id: photoId },
             relations: ['folder'],
         });
@@ -67,10 +67,11 @@ export class PhotosService {
             transferred_by: photo.transferred_by
                 ? { id: photo.transferred_by.id, name: photo.transferred_by.username }
                 : null,
-            folder: folderPhoto
-                ? { id: folderPhoto.folder.id, name: folderPhoto.folder.name }
-                : null,
-            downloads: downloads.map((d) => ({
+            folders: folderPhotos.map(fp => ({
+                id: fp.folder.id,
+                name: fp.folder.name,
+            })),
+            downloads: downloads.map(d => ({
                 user: { id: d.user.id, name: d.user.username },
                 numberOfTimes: d.numberOfTimes,
                 lastDownloadedAt: d.downloaded_at,
@@ -135,6 +136,8 @@ export class PhotosService {
 
         const res = this.photosRepository.delete(id);
         this.changesGateway.sendNoFolderUpdate();
+        this.changesGateway.sendImageDeleted(id)
+
         return res
     }
 }

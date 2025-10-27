@@ -19,7 +19,6 @@ export class PhotosController {
     @UseGuards(AuthGuard('jwt'))
     @Get()
     findAll() {
-        console.log("pedido de imagem 2")
 
         return this.photosService.findAll();
     }
@@ -43,7 +42,6 @@ export class PhotosController {
     @UseGuards(AuthGuard('jwt'))
     @Get(':id')
     findOne(@Param('id') id: number) {
-        console.log("pedido de imagem1")
 
         return this.photosService.findOne(id);
     }

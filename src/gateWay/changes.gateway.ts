@@ -35,8 +35,15 @@ export class ChangesGateway implements OnGatewayConnection {
     sendImageEdited(folderId: number) {
         this.server.emit('imageEdited', folderId);
     }
-
-
+    sendImageAdded() {
+        this.server.emit('imageAdded',);
+    }
+    sendImageDeleted(imageId: number) {
+        this.server.emit('imageDeleted', imageId);
+    }
+    sendImageChanged(imageId: number) {
+        this.server.emit('imageChanged', imageId);
+    }
     sendNoFolderUpdate() {
         this.server.emit('noFolderUpdate',);
     }

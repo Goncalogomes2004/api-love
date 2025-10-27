@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { FolderPhoto } from 'src/entities/folder_photos.entity';
 import { Photo } from 'src/entities/photo.entity';
 import { Folder } from 'src/entities/folder.entity';
+import { ChangesGateway } from 'src/gateWay/changes.gateway';
 
 @Injectable()
 export class FolderPhotosService {
@@ -15,6 +16,8 @@ export class FolderPhotosService {
         private photosRepo: Repository<Photo>,
         @InjectRepository(Folder)
         private foldersRepo: Repository<Folder>,
+        private changesGateway: ChangesGateway,
+
     ) { }
 
     async addPhotoToFolder(folderId: number, photoData: Partial<Photo>) {
@@ -27,7 +30,8 @@ export class FolderPhotosService {
             photo_id: photoData.id,
         });
 
-        await this.folderPhotosRepo.save(relation);
+        const image = await this.folderPhotosRepo.save(relation);
+        this.changesGateway.sendImageChanged(image.photo_id);
         return photoData;
     }
 

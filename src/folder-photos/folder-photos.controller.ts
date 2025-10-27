@@ -21,6 +21,8 @@ export class FolderPhotosController {
         const resp = await this.folderPhotosService.addPhotoToFolder(folderId, photoData);
         this.changesGateway.sendImageEdited(folderId)
         this.changesGateway.sendNoFolderUpdate();
+
+
         return resp
 
 
@@ -39,6 +41,8 @@ export class FolderPhotosController {
         const resp = await this.folderPhotosService.removePhotoFromFolder(folderId, photoId);
         this.changesGateway.sendImageEdited(folderId)
         this.changesGateway.sendNoFolderUpdate();
+        this.changesGateway.sendImageChanged(photoId);
+
         return resp
     }
 }
