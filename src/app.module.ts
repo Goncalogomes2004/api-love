@@ -21,7 +21,7 @@ import { AuthModule } from './auth/auth.module';
       type: 'mysql',
       host: 'mysql_db2',
       //host: 'localhost',
-      port: 3307,
+      port: 3306,
       username: 'root',
       password: 'Lavragem-titubeou-bebia0',
       database: 'love',
